@@ -14,7 +14,7 @@ namespace dummy_data_tool2
         private Settings mySettings;
         private readonly string[] firstNames;
         private readonly string[] lastNames;
-        private readonly string[] areaCodes;
+        //private readonly string[] areaCodes;
         private readonly Random rand = new Random();
         private const int TimerInterval = 7500;
 
@@ -61,6 +61,7 @@ namespace dummy_data_tool2
             };
 
             //initialize an array of 50 random area codes
+            /*
             areaCodes = new[]
             {
                 "202", "305", "310", "312", "404", "415", "512", "617", "646", "702",
@@ -69,6 +70,7 @@ namespace dummy_data_tool2
                 "217", "219", "303", "315", "330", "410", "510", "516", "618", "707",
                 "218", "220", "304", "316", "331", "412", "520", "530", "619", "708"
             };
+            */
 
             InitializeComponent();
 
@@ -97,62 +99,9 @@ namespace dummy_data_tool2
             }
         }
 
-        private void tsbClose_Click(object sender, EventArgs e)
+        private void TsbClose_Click(object sender, EventArgs e)
         {
             CloseTool();
-        }
-
-        private void tsbSample_Click(object sender, EventArgs e)
-        {
-            // The ExecuteMethod method handles connecting to an
-            // organization if XrmToolBox is not yet connected
-            ExecuteMethod(GetAccounts);
-        }
-
-        private void GetAccounts()
-        {
-            WorkAsync(new WorkAsyncInfo
-            {
-                Message = "Getting accounts",
-                Work = (worker, args) =>
-                {
-                    args.Result = Service.RetrieveMultiple(new QueryExpression("account")
-                    {
-                        TopCount = 50
-                    });
-                },
-                PostWorkCallBack = (args) =>
-                {
-                    if (args.Error != null)
-                    {
-                        MessageBox.Show(args.Error.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                    var result = args.Result as EntityCollection;
-                    if (result != null)
-                    {
-                        MessageBox.Show($"Found {result.Entities.Count} accounts");
-                    }
-                }
-            });
-        }
-
-        /// This event occurs when the plugin is closed
-        private void MyPluginControl_OnCloseTool(object sender, EventArgs e)
-        {
-            // Before leaving, save the settings
-            SettingsManager.Instance.Save(GetType(), mySettings);
-        }
-
-        /// This event occurs when the connection has been updated in XrmToolBox
-        public override void UpdateConnection(IOrganizationService newService, ConnectionDetail detail, string actionName, object parameter)
-        {
-            base.UpdateConnection(newService, detail, actionName, parameter);
-
-            if (mySettings != null && detail != null)
-            {
-                mySettings.LastUsedOrganizationWebappUrl = detail.WebApplicationUrl;
-                LogInfo("Connection has changed to: {0}", detail.WebApplicationUrl);
-            }
         }
 
         private void InitializeListViewColumns()
@@ -187,12 +136,23 @@ namespace dummy_data_tool2
             //stop the timer after clearing the message
             timerStatus.Stop();
         }
-
+        /*
         private string GenerateRandomName()
         {
             string firstName = firstNames[rand.Next(firstNames.Length)];
             string lastName = lastNames[rand.Next(lastNames.Length)];
             return $"{firstName} {lastName}";
+        }
+        */
+
+        private string GenerateRandomFirstName()
+        {
+            return firstNames[rand.Next(firstNames.Length)];
+        }
+
+        private string GenerateRandomLastName()
+        {
+            return lastNames[rand.Next(lastNames.Length)];
         }
 
         private DateTime GenerateRandomBirthdate()
@@ -212,35 +172,38 @@ namespace dummy_data_tool2
         private string GenerateRandomPhoneNumber()
         {
             //randomly select an area code
-            string areaCode = areaCodes[rand.Next(areaCodes.Length)];
+            //string areaCode = areaCodes[rand.Next(areaCodes.Length)];
 
             //generate the remaining 7 digits of the phone number
             //generates a number between 1000000 and 9999999
             int numberPart = rand.Next(1000000, 10000000);
 
             //combine area code and number
-            return $"{areaCode}{numberPart}";
+            return $"555{numberPart}";
         }
 
         private void BtnGenerateRandomNames_Click(object sender, EventArgs e)
         {
             //retrieve the number of names to generate from the NumericUpDown control and populate the ListView
-            int numberOfNamesToGenerate = (int)numNameCount.Value;
-            PopulateListView(numberOfNamesToGenerate);
+            int numberOfContactsToGenerate = (int)numNameCount.Value;
+            PopulateListView(numberOfContactsToGenerate);
             //update the status message
             UpdateStatus("Ready.", false);
         }
 
-        private void PopulateListView(int numberOfNames)
+        private void PopulateListView(int numberOfContacts)
         {
             lvGeneratedNames.Items.Clear();
 
-            for (int i = 0; i < numberOfNames; i++)
+            for (int i = 0; i < numberOfContacts; i++)
             {
-                string fullName = GenerateRandomName();
+                //string fullName = GenerateRandomName();
+                string firstName = GenerateRandomFirstName();
+                string lastName = GenerateRandomLastName();
                 DateTime birthdate = GenerateRandomBirthdate();
                 string phoneNumber = GenerateRandomPhoneNumber();
 
+                /*
                 //split the full name into first and last names
                 string[] nameParts = fullName.Split(' ');
 
@@ -254,6 +217,13 @@ namespace dummy_data_tool2
                 item.SubItems.Add(birthdate.ToString("MM-dd-yyyy"));
 
                 //add the phone number
+                item.SubItems.Add(phoneNumber);
+                */
+
+                ListViewItem item = new ListViewItem(firstName);
+                item.SubItems.Add(lastName);
+                //format the date as "01-01-2023"
+                item.SubItems.Add(birthdate.ToString("MM-dd-yyyy"));
                 item.SubItems.Add(phoneNumber);
 
                 //add the item to the ListView
