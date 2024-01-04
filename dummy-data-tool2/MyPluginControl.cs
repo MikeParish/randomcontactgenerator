@@ -16,10 +16,11 @@ namespace dummy_data_tool2
         private readonly string[] lastNames;
         private readonly string[] areaCodes;
         private readonly Random rand = new Random();
+        private const int TimerInterval = 7500;
 
         public MyPluginControl()
         {
-            //an array of 100 random first names
+            //initialize an array of 100 random first names
             firstNames = new[] 
             {
                 "John", "Jane", "Alex", "Emily", "Michael", "Sarah", "David", "Emma",
@@ -40,7 +41,7 @@ namespace dummy_data_tool2
                 "Julian", "Bella", "Aaron", "Gabriella", "Adrian", "Penelope"
             };
 
-            //an array of 100 random last names
+            //intialize an array of 100 random last names
             lastNames = new[] 
             {
                 "Smith", "Johnson", "Williams", "Jones", "Brown", "Davis", "Miller", "Wilson",
@@ -59,7 +60,7 @@ namespace dummy_data_tool2
                 "Alexander", "Russell", "Griffin", "Diaz", "Hayes"
             };
 
-            //an array of 50 random area codes
+            //initialize an array of 50 random area codes
             areaCodes = new[]
             {
                 "202", "305", "310", "312", "404", "415", "512", "617", "646", "702",
@@ -74,17 +75,15 @@ namespace dummy_data_tool2
             //initialize the ListView columns
             InitializeListViewColumns();
 
-            //update the initial state of the Clear List button
-            UpdateClearButtonState();
+            //set the initial state of the "Clear List" button
+            btnClearList.Enabled = false;
 
-            //update the initial state of the Add Contact(s) to Dataverse button
-            UpdateAddContactsButtonState();
+            //set the initial state of the "Create Contact(s) in Dataverse" button
+            btnAddNamesToCRM.Enabled = false;
         }
 
         private void MyPluginControl_Load(object sender, EventArgs e)
         {
-            ShowInfoNotification("This is a notification that can lead to XrmToolBox repository", new Uri("https://github.com/MscrmTools/XrmToolBox"));
-
             // Loads or creates the settings for the plugin
             if (!SettingsManager.Instance.TryLoad(GetType(), out mySettings))
             {
@@ -159,24 +158,34 @@ namespace dummy_data_tool2
         private void InitializeListViewColumns()
         {
             lvGeneratedNames.Columns.Clear();
-            //names and widths of the columns
+            //column names and column pixel widths
             lvGeneratedNames.Columns.Add("First Name", 65);
             lvGeneratedNames.Columns.Add("Last Name", 75);
-            lvGeneratedNames.Columns.Add("Birth Date", 75);
+            lvGeneratedNames.Columns.Add("Birthdate", 75);
             lvGeneratedNames.Columns.Add("Phone Number", 85);
         }
         
-        //status message logic
         private void UpdateStatus(string message, bool isError = false)
         {
-            lblStatusMessage.ForeColor = isError ? Color.Red : Color.DarkSeaGreen;
+            lblStatusMessage.ForeColor = isError ? Color.Red : Color.Lime;
             lblStatusMessage.Text = message;
+            //reset and start the timer each time the status is updated
+            ResetAndStartTimer();
         }
 
-        private void timerStatus_Tick(object sender, EventArgs e)
+        private void ResetAndStartTimer()
         {
-            lblStatusMessage.Text = ""; //reset the status message to blank
-            timerStatus.Stop(); //stop the timer after clearing the message
+            timerStatus.Stop();
+            timerStatus.Interval = TimerInterval;
+            timerStatus.Start();
+        }
+
+        private void TimerStatus_Tick(object sender, EventArgs e)
+        {
+            //reset the status message to blank
+            lblStatusMessage.Text = "";
+            //stop the timer after clearing the message
+            timerStatus.Stop();
         }
 
         private string GenerateRandomName()
@@ -213,12 +222,13 @@ namespace dummy_data_tool2
             return $"{areaCode}{numberPart}";
         }
 
-        private void btnGenerateRandomNames_Click(object sender, EventArgs e)
+        private void BtnGenerateRandomNames_Click(object sender, EventArgs e)
         {
-            //retrieve the number of names to generate from the NumericUpDown control
+            //retrieve the number of names to generate from the NumericUpDown control and populate the ListView
             int numberOfNamesToGenerate = (int)numNameCount.Value;
             PopulateListView(numberOfNamesToGenerate);
-            UpdateStatus("Ready", false);
+            //update the status message
+            UpdateStatus("Ready.", false);
         }
 
         private void PopulateListView(int numberOfNames)
@@ -249,15 +259,15 @@ namespace dummy_data_tool2
                 //add the item to the ListView
                 lvGeneratedNames.Items.Add(item);
             }
-                
-        //update the state of the Clear List button
-        UpdateClearButtonState();
 
-        //update the state of the Add Contact(s) to Dataverse button
-        UpdateAddContactsButtonState();
+            //update the state of the "Clear List" button
+            btnClearList.Enabled = true;
+
+            //update the state of the "Create Contact(s) in Dataverse" button
+            btnAddNamesToCRM.Enabled = true;
         }
 
-        private void btnAddNamesToCrm_Click(object sender, EventArgs e)
+        private void BtnAddNamesToCrm_Click(object sender, EventArgs e)
         {
             foreach (ListViewItem item in lvGeneratedNames.Items)
             {
@@ -276,60 +286,76 @@ namespace dummy_data_tool2
                 //call the method to create a contact in Dataverse
                 CreateContactInCrm(firstName, lastName, birthdate, phoneNumberString);
             }
-
-            //update the UI to indicate completion or clear the ListView
-            if (numNameCount.Value == 1)
-            {
-                UpdateStatus($"Success! {numNameCount.Value} contact added to CRM", false);
-            }
-            else
-            {
-                UpdateStatus($"Success! {numNameCount.Value} contacts added to CRM", false);
-            }
-            
-            //disable the Add Contact(s) to Dataverse button
+      
+            //disable the "Create Contact(s) in Dataverse" button since the contacts have just been created in Dataverse
             btnAddNamesToCRM.Enabled = false;
-            //start status message countdown back to blank
-            timerStatus.Start();
         }
 
         private void CreateContactInCrm(string firstName, string lastName, DateTime birthdate, string phoneNumber)
         {
-            //create a new Dataverse contact entity
-            Entity newContact = new Entity("contact");
-            newContact["firstname"] = firstName;
-            newContact["lastname"] = lastName;
-            newContact["birthdate"] = birthdate;
-            newContact["address1_telephone1"] = phoneNumber;
+            WorkAsync(new WorkAsyncInfo
+            {
+                Message = "Creating contact(s) in Dataverse...",
+                Work = (worker, args) =>
+                {
+                    //this code is executed in another thread
+                    Entity newContact = new Entity("contact");
+                    newContact["firstname"] = firstName;
+                    newContact["lastname"] = lastName;
+                    newContact["birthdate"] = birthdate;
+                    newContact["address1_telephone1"] = phoneNumber;
 
-            //use the Dataverse service client to create the contact in Dataverse
-            Guid contactId = Service.Create(newContact);
+                    //use the Dataverse service client to create the contact in Dataverse
+                    Guid contactId = Service.Create(newContact);
+                    args.Result = contactId;
+                },
+
+                /*
+                ProgressChanged = e =>
+                {
+                    //update UI to indicate progress, if needed
+                    SetWorkingMessage(e.UserState.ToString()); 
+                }
+                */
+
+                PostWorkCallBack = e =>
+                {
+                    if (e.Error != null)
+                    {
+                        //handle any errors that occurred during the operation
+                        MessageBox.Show($"An error occurred: {e.Error.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    else
+                    {
+                        //this code is executed in the main thread after the background work is completed
+                        //Guid contactId = (Guid)e.Result;
+                        //UpdateStatus($"Contact created with ID: {contactId}");
+                        if (numNameCount.Value == 1)
+                        {
+                            UpdateStatus($"Success! Created {numNameCount.Value} contact in Dataverse.", false);
+                        }
+                        else
+                        {
+                            UpdateStatus($"Success! Created {numNameCount.Value} contacts in Dataverse.", false);
+                        }
+                    }
+                }
+            });
         }
 
-        private void btnClearList_Click(object sender, EventArgs e)
+        private void BtnClearList_Click(object sender, EventArgs e)
         {
+            //clear the ListView
             lvGeneratedNames.Items.Clear();
 
-            //update the status to inform the user that the list has been cleared
-            UpdateStatus("List cleared", false);
-            //start status message countdown back to blank
-            timerStatus.Start();
+            //update the status message to inform the user that the list has been cleared
+            UpdateStatus("List cleared.", false);
 
-            //update the state of the Clear List button
-            UpdateClearButtonState();
+            //update the state of the "Clear List" button
+            btnClearList.Enabled = false;
 
-            //update the state of the Add Contact(s) to Dataverse button
-            UpdateAddContactsButtonState();
-        }
-
-        private void UpdateClearButtonState()
-        {
-            btnClearList.Enabled = lvGeneratedNames.Items.Count > 0;
-        }
-
-        private void UpdateAddContactsButtonState()
-        {
-            btnAddNamesToCRM.Enabled = lvGeneratedNames.Items.Count > 0;
+            //update the state of the "Create Contact(s) in Dataverse" button
+            btnAddNamesToCRM.Enabled = false;
         }
     }
 }

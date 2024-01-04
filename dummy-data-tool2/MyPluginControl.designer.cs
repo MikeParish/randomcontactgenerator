@@ -67,17 +67,17 @@ namespace dummy_data_tool2
             // 
             // lblStatusMessage
             // 
-            this.lblStatusMessage.ForeColor = System.Drawing.Color.DarkSeaGreen;
-            this.lblStatusMessage.Location = new System.Drawing.Point(116, 361);
+            this.lblStatusMessage.ForeColor = System.Drawing.Color.Lime;
+            this.lblStatusMessage.Location = new System.Drawing.Point(199, 361);
             this.lblStatusMessage.Name = "lblStatusMessage";
-            this.lblStatusMessage.Size = new System.Drawing.Size(447, 20);
+            this.lblStatusMessage.Size = new System.Drawing.Size(351, 20);
             this.lblStatusMessage.TabIndex = 10;
             this.lblStatusMessage.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // timerStatus
             // 
-            this.timerStatus.Interval = 2500;
-            this.timerStatus.Tick += new System.EventHandler(this.timerStatus_Tick);
+            this.timerStatus.Interval = 7500;
+            this.timerStatus.Tick += new System.EventHandler(this.TimerStatus_Tick);
             // 
             // btnGenerateRandomNames
             // 
@@ -87,7 +87,7 @@ namespace dummy_data_tool2
             this.btnGenerateRandomNames.TabIndex = 11;
             this.btnGenerateRandomNames.Text = "Generate";
             this.btnGenerateRandomNames.UseVisualStyleBackColor = true;
-            this.btnGenerateRandomNames.Click += new System.EventHandler(this.btnGenerateRandomNames_Click);
+            this.btnGenerateRandomNames.Click += new System.EventHandler(this.BtnGenerateRandomNames_Click);
             // 
             // numNameCount
             // 
@@ -141,23 +141,23 @@ namespace dummy_data_tool2
             // 
             // btnAddNamesToCRM
             // 
-            this.btnAddNamesToCRM.Location = new System.Drawing.Point(567, 346);
+            this.btnAddNamesToCRM.Location = new System.Drawing.Point(553, 346);
             this.btnAddNamesToCRM.Name = "btnAddNamesToCRM";
-            this.btnAddNamesToCRM.Size = new System.Drawing.Size(228, 50);
+            this.btnAddNamesToCRM.Size = new System.Drawing.Size(242, 50);
             this.btnAddNamesToCRM.TabIndex = 17;
-            this.btnAddNamesToCRM.Text = "Add Contact(s) to Dataverse";
+            this.btnAddNamesToCRM.Text = "Create Contact(s) in Dataverse";
             this.btnAddNamesToCRM.UseVisualStyleBackColor = true;
-            this.btnAddNamesToCRM.Click += new System.EventHandler(this.btnAddNamesToCrm_Click);
+            this.btnAddNamesToCRM.Click += new System.EventHandler(this.BtnAddNamesToCrm_Click);
             // 
             // btnClearList
             // 
-            this.btnClearList.Location = new System.Drawing.Point(567, 420);
+            this.btnClearList.Location = new System.Drawing.Point(553, 420);
             this.btnClearList.Name = "btnClearList";
-            this.btnClearList.Size = new System.Drawing.Size(228, 50);
+            this.btnClearList.Size = new System.Drawing.Size(242, 50);
             this.btnClearList.TabIndex = 18;
             this.btnClearList.Text = "Clear List";
             this.btnClearList.UseVisualStyleBackColor = true;
-            this.btnClearList.Click += new System.EventHandler(this.btnClearList_Click);
+            this.btnClearList.Click += new System.EventHandler(this.BtnClearList_Click);
             // 
             // MyPluginControl
             // 
