@@ -8,8 +8,8 @@
     <ProjectGuid>{13F026F0-9A7A-4BAC-99E4-EA44669AED29}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>dummy_data_tool2</RootNamespace>
-    <AssemblyName>dummy-data-tool2</AssemblyName>
+    <RootNamespace>RandomContactGenerator</RootNamespace>
+    <AssemblyName>RandomContactGenerator</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
@@ -248,12 +248,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ContactData.cs" />
-    <Compile Include="MyPlugin.cs" />
-    <Compile Include="MyPluginControl.cs">
+    <Compile Include="RandomContactGenerator.cs" />
+    <Compile Include="RandomContactGeneratorControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="MyPluginControl.designer.cs">
-      <DependentUpon>MyPluginControl.cs</DependentUpon>
+    <Compile Include="RandomContactGeneratorControl.designer.cs">
+      <DependentUpon>RandomContactGeneratorControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
@@ -263,8 +263,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="MyPluginControl.resx">
-      <DependentUpon>MyPluginControl.cs</DependentUpon>
+    <EmbeddedResource Include="RandomContactGeneratorControl.resx">
+      <DependentUpon>RandomContactGeneratorControl.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

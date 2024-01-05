@@ -1,13 +1,12 @@
 ﻿using Microsoft.Xrm.Sdk;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Windows.Forms;
 using XrmToolBox.Extensibility;
 
-namespace dummy_data_tool2
+namespace RandomContactGenerator
 {
-    public partial class MyPluginControl : PluginControlBase
+    public partial class RandomContactGeneratorControl : PluginControlBase
     {
         private Settings mySettings;
         private readonly string[] firstNames;
@@ -15,7 +14,7 @@ namespace dummy_data_tool2
         private readonly Random rand = new Random();
         private readonly List<ContactData> contactsToCreate = new List<ContactData>();
 
-        public MyPluginControl()
+        public RandomContactGeneratorControl()
         {
             //initialize an array of 100 random first names
             firstNames = new[] 
@@ -207,7 +206,7 @@ namespace dummy_data_tool2
             PopulateListView(numberOfContactsToGenerate);
         }
 
-        private void MyPluginControl_Load(object sender, EventArgs e)
+        private void RandomContactGeneratorControl_Load(object sender, EventArgs e)
         {
             // Loads or creates the settings for the plugin
             if (!SettingsManager.Instance.TryLoad(GetType(), out mySettings))

@@ -7,13 +7,13 @@ using System.Reflection;
 using XrmToolBox.Extensibility;
 using XrmToolBox.Extensibility.Interfaces;
 
-namespace dummy_data_tool2
+namespace RandomContactGenerator
 {
     // Do not forget to update version number and author (company attribute) in AssemblyInfo.cs class
     // To generate Base64 string for Images below, you can use https://www.base64-image.de/
     [Export(typeof(IXrmToolBoxPlugin)),
-        ExportMetadata("Name", "My First Plugin"),
-        ExportMetadata("Description", "This is a description for my first plugin"),
+        ExportMetadata("Name", "Random Contact Generator"),
+        ExportMetadata("Description", "Streamlines the creation of random contacts in Dataverse"),
         // Please specify the base64 content of a 32x32 pixels image
         ExportMetadata("SmallImageBase64", null),
         // Please specify the base64 content of a 80x80 pixels image
@@ -21,17 +21,17 @@ namespace dummy_data_tool2
         ExportMetadata("BackgroundColor", "Lavender"),
         ExportMetadata("PrimaryFontColor", "Black"),
         ExportMetadata("SecondaryFontColor", "Gray")]
-    public class MyPlugin : PluginBase
+    public class RandomContactGenerator : PluginBase
     {
         public override IXrmToolBoxPluginControl GetControl()
         {
-            return new MyPluginControl();
+            return new RandomContactGeneratorControl();
         }
 
         /// <summary>
         /// Constructor 
         /// </summary>
-        public MyPlugin()
+        public RandomContactGenerator()
         {
             // If you have external assemblies that you need to load, uncomment the following to 
             // hook into the event that will fire when an Assembly fails to resolve

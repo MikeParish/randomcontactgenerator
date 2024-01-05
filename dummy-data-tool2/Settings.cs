@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace dummy_data_tool2
+namespace RandomContactGenerator
 {
     /// <summary>
     /// This class can help you to store settings for your plugin

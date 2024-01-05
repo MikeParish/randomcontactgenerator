@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace dummy_data_tool2
+namespace RandomContactGenerator
 {
     internal class ContactData
     {

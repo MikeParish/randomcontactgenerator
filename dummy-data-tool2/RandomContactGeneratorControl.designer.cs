@@ -1,7 +1,7 @@
 ﻿
-namespace dummy_data_tool2
+namespace RandomContactGenerator
 {
-    partial class MyPluginControl
+    partial class RandomContactGeneratorControl
     {
         /// <summary> 
         /// Variable nécessaire au concepteur.
@@ -64,32 +64,27 @@ namespace dummy_data_tool2
             // 
             // btnGenerateRandomContacts
             // 
-            this.btnGenerateRandomContacts.Location = new System.Drawing.Point(44, 152);
+            this.btnGenerateRandomContacts.Location = new System.Drawing.Point(44, 146);
             this.btnGenerateRandomContacts.Name = "btnGenerateRandomContacts";
             this.btnGenerateRandomContacts.Size = new System.Drawing.Size(242, 50);
             this.btnGenerateRandomContacts.TabIndex = 11;
-            this.btnGenerateRandomContacts.Text = "Generate";
+            this.btnGenerateRandomContacts.Text = "Generate Contact(s)";
             this.btnGenerateRandomContacts.UseVisualStyleBackColor = true;
             this.btnGenerateRandomContacts.Click += new System.EventHandler(this.BtnGenerateRandomContacts_Click);
             // 
             // numNameCount
             // 
             this.numNameCount.Location = new System.Drawing.Point(44, 104);
-            this.numNameCount.Maximum = new decimal(new int[] {
-            25,
-            0,
-            0,
-            0});
             this.numNameCount.Minimum = new decimal(new int[] {
             1,
             0,
             0,
             0});
             this.numNameCount.Name = "numNameCount";
-            this.numNameCount.Size = new System.Drawing.Size(62, 26);
+            this.numNameCount.Size = new System.Drawing.Size(68, 26);
             this.numNameCount.TabIndex = 12;
             this.numNameCount.Value = new decimal(new int[] {
-            5,
+            1,
             0,
             0,
             0});
@@ -106,11 +101,11 @@ namespace dummy_data_tool2
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(112, 106);
+            this.label2.Location = new System.Drawing.Point(117, 106);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(85, 20);
+            this.label2.Size = new System.Drawing.Size(94, 20);
             this.label2.TabIndex = 14;
-            this.label2.Text = "(max is 25)";
+            this.label2.Text = "(max is 100)";
             // 
             // lvGeneratedContacts
             // 
@@ -142,7 +137,7 @@ namespace dummy_data_tool2
             this.btnClearList.UseVisualStyleBackColor = true;
             this.btnClearList.Click += new System.EventHandler(this.BtnClearList_Click);
             // 
-            // MyPluginControl
+            // RandomContactGeneratorControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -155,9 +150,9 @@ namespace dummy_data_tool2
             this.Controls.Add(this.btnGenerateRandomContacts);
             this.Controls.Add(this.toolStripMenu);
             this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.Name = "MyPluginControl";
+            this.Name = "RandomContactGeneratorControl";
             this.Size = new System.Drawing.Size(875, 512);
-            this.Load += new System.EventHandler(this.MyPluginControl_Load);
+            this.Load += new System.EventHandler(this.RandomContactGeneratorControl_Load);
             this.toolStripMenu.ResumeLayout(false);
             this.toolStripMenu.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numNameCount)).EndInit();
