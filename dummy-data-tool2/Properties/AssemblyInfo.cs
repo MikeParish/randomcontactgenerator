@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("RandomContactGenerator")]
-[assembly: AssemblyDescription("Streamlines the creation of random contacts in Dataverse")]
+[assembly: AssemblyDescription("Streamlines the creation of random contacts in Dataverse.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Michael Parish")]
 [assembly: AssemblyProduct("RandomContactGenerator")]

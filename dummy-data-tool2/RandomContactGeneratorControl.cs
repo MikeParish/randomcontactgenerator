@@ -129,14 +129,14 @@ namespace RandomContactGenerator
 
         private DateTime GenerateRandomBirthdate()
         {
-            //define the range of years
+            //define the range of years for birthdates
             int startYear = 1950;
             int endYear = 2000;
 
-            //generate a random year, month and day
+            //rand.Next(minValue inclusive, maxValue exclusive)
             int year = rand.Next(startYear, endYear + 1);
-            int month = rand.Next(1, 13); // 1 to 12
-            int day = rand.Next(1, DateTime.DaysInMonth(year, month) + 1); // 1 to 28/29/30/31
+            int month = rand.Next(1, 13);
+            int day = rand.Next(1, DateTime.DaysInMonth(year, month) + 1);
 
             return new DateTime(year, month, day);
         }
