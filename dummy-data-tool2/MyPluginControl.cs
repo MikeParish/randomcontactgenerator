@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xrm.Sdk;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Windows.Forms;
 using XrmToolBox.Extensibility;
@@ -12,6 +13,7 @@ namespace dummy_data_tool2
         private readonly string[] firstNames;
         private readonly string[] lastNames;
         private readonly Random rand = new Random();
+        private readonly List<ContactData> contactsToCreate = new List<ContactData>();
 
         public MyPluginControl()
         {
@@ -67,31 +69,40 @@ namespace dummy_data_tool2
             btnCreateContactsInDataverse.Enabled = false;
         }
 
-        private void CreateContactsInDataverse(string firstName, string lastName, DateTime birthdate, string phoneNumber)
+        private void CreateContactsInDataverse()
         {
             WorkAsync(new WorkAsyncInfo
             {
                 Message = "Creating Contact(s) in Dataverse...",
                 Work = (worker, args) =>
                 {
-                    //this code is executed in another thread
-                    Entity newContact = new Entity("contact");
-                    newContact["firstname"] = firstName;
-                    newContact["lastname"] = lastName;
-                    newContact["birthdate"] = birthdate;
-                    newContact["address1_telephone1"] = phoneNumber;
+                    int createdCount = 0;
 
-                    //use the Dataverse service client to create the contact in Dataverse
-                    Guid contactId = Service.Create(newContact);
-                    args.Result = contactId;
+                    foreach (var contact in contactsToCreate)
+                    {
+                        Entity newContact = new Entity("contact");
+                        newContact["firstname"] = contact.FirstName;
+                        newContact["lastname"] = contact.LastName;
+                        newContact["birthdate"] = contact.Birthdate;
+                        newContact["address1_telephone1"] = contact.PhoneNumber;
+
+                        Service.Create(newContact);
+                        createdCount++;
+                    }
+
+                    args.Result = createdCount;
                 },
 
                 PostWorkCallBack = e =>
                 {
                     if (e.Error != null)
                     {
-                        //handle any errors that occurred during the operation
                         MessageBox.Show($"An error occurred: {e.Error.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    else
+                    {
+                        int createdCount = (int)e.Result;
+                        MessageBox.Show($"{createdCount} contact(s) created successfully in Dataverse.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                 }
             });
@@ -143,6 +154,7 @@ namespace dummy_data_tool2
         private void PopulateListView(int numberOfContacts)
         {
             lvGeneratedContacts.Items.Clear();
+            contactsToCreate.Clear();
 
             for (int i = 0; i < numberOfContacts; i++)
             {
@@ -151,12 +163,15 @@ namespace dummy_data_tool2
                 DateTime birthdate = GenerateRandomBirthdate();
                 string phoneNumber = GenerateRandomPhoneNumber();
 
+                //add the contact information to the ListView
                 ListViewItem item = new ListViewItem(firstName);
                 item.SubItems.Add(lastName);
                 item.SubItems.Add(birthdate.ToString("MM-dd-yyyy")); //format the date as "01-01-2023"
                 item.SubItems.Add(phoneNumber);
-                //add the item to the ListView
                 lvGeneratedContacts.Items.Add(item);
+
+                //also add the contact data to the contactsToCreate list
+                contactsToCreate.Add(new ContactData(firstName, lastName, birthdate, phoneNumber));
             }
 
             //enable the "Clear List" button
@@ -180,25 +195,8 @@ namespace dummy_data_tool2
 
         private void BtnCreateContactsInDataverse_Click(object sender, EventArgs e)
         {
-            foreach (ListViewItem item in lvGeneratedContacts.Items)
-            {
-                //first name from the ListViewItem
-                string firstName = item.Text;
-                //last name from the ListViewItem
-                string lastName = item.SubItems[1].Text;
-                //birthdate from the ListViewItem
-                string birthdateString = item.SubItems[2].Text;
-                //phone number from the ListViewItem
-                string phoneNumberString = item.SubItems[3].Text;
-
-                //convert the birthdate string to DateTime
-                DateTime birthdate = DateTime.ParseExact(birthdateString, "MM-dd-yyyy", CultureInfo.InvariantCulture);
-
-                //call the method to create a contact in Dataverse
-                CreateContactsInDataverse(firstName, lastName, birthdate, phoneNumberString);
-            }
-
-            //disable the "Create Contact(s) in Dataverse" button since the contacts have just been created in Dataverse
+            CreateContactsInDataverse();
+            //disable the "Create Contact(s) in Dataverse" button since the contacts have been created in Dataverse
             btnCreateContactsInDataverse.Enabled = false;
         }
 
