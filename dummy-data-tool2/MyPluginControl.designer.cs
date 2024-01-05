@@ -29,17 +29,14 @@ namespace dummy_data_tool2
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             this.toolStripMenu = new System.Windows.Forms.ToolStrip();
             this.tsbClose = new System.Windows.Forms.ToolStripButton();
-            this.lblStatusMessage = new System.Windows.Forms.Label();
-            this.timerStatus = new System.Windows.Forms.Timer(this.components);
-            this.btnGenerateRandomNames = new System.Windows.Forms.Button();
+            this.btnGenerateRandomContacts = new System.Windows.Forms.Button();
             this.numNameCount = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.lvGeneratedNames = new System.Windows.Forms.ListView();
-            this.btnAddNamesToCRM = new System.Windows.Forms.Button();
+            this.lvGeneratedContacts = new System.Windows.Forms.ListView();
+            this.btnCreateContactsInDataverse = new System.Windows.Forms.Button();
             this.btnClearList = new System.Windows.Forms.Button();
             this.toolStripMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numNameCount)).BeginInit();
@@ -52,7 +49,7 @@ namespace dummy_data_tool2
             this.tsbClose});
             this.toolStripMenu.Location = new System.Drawing.Point(0, 0);
             this.toolStripMenu.Name = "toolStripMenu";
-            this.toolStripMenu.Size = new System.Drawing.Size(844, 29);
+            this.toolStripMenu.Size = new System.Drawing.Size(875, 29);
             this.toolStripMenu.TabIndex = 4;
             this.toolStripMenu.Text = "toolStrip1";
             // 
@@ -65,29 +62,15 @@ namespace dummy_data_tool2
             this.tsbClose.Text = "Close this tool";
             this.tsbClose.Click += new System.EventHandler(this.TsbClose_Click);
             // 
-            // lblStatusMessage
+            // btnGenerateRandomContacts
             // 
-            this.lblStatusMessage.ForeColor = System.Drawing.Color.Lime;
-            this.lblStatusMessage.Location = new System.Drawing.Point(199, 361);
-            this.lblStatusMessage.Name = "lblStatusMessage";
-            this.lblStatusMessage.Size = new System.Drawing.Size(351, 20);
-            this.lblStatusMessage.TabIndex = 10;
-            this.lblStatusMessage.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // timerStatus
-            // 
-            this.timerStatus.Interval = 7500;
-            this.timerStatus.Tick += new System.EventHandler(this.TimerStatus_Tick);
-            // 
-            // btnGenerateRandomNames
-            // 
-            this.btnGenerateRandomNames.Location = new System.Drawing.Point(44, 152);
-            this.btnGenerateRandomNames.Name = "btnGenerateRandomNames";
-            this.btnGenerateRandomNames.Size = new System.Drawing.Size(145, 50);
-            this.btnGenerateRandomNames.TabIndex = 11;
-            this.btnGenerateRandomNames.Text = "Generate";
-            this.btnGenerateRandomNames.UseVisualStyleBackColor = true;
-            this.btnGenerateRandomNames.Click += new System.EventHandler(this.BtnGenerateRandomNames_Click);
+            this.btnGenerateRandomContacts.Location = new System.Drawing.Point(44, 152);
+            this.btnGenerateRandomContacts.Name = "btnGenerateRandomContacts";
+            this.btnGenerateRandomContacts.Size = new System.Drawing.Size(242, 50);
+            this.btnGenerateRandomContacts.TabIndex = 11;
+            this.btnGenerateRandomContacts.Text = "Generate";
+            this.btnGenerateRandomContacts.UseVisualStyleBackColor = true;
+            this.btnGenerateRandomContacts.Click += new System.EventHandler(this.BtnGenerateRandomContacts_Click);
             // 
             // numNameCount
             // 
@@ -129,29 +112,29 @@ namespace dummy_data_tool2
             this.label2.TabIndex = 14;
             this.label2.Text = "(max is 25)";
             // 
-            // lvGeneratedNames
+            // lvGeneratedContacts
             // 
-            this.lvGeneratedNames.HideSelection = false;
-            this.lvGeneratedNames.Location = new System.Drawing.Point(309, 68);
-            this.lvGeneratedNames.Name = "lvGeneratedNames";
-            this.lvGeneratedNames.Size = new System.Drawing.Size(486, 255);
-            this.lvGeneratedNames.TabIndex = 16;
-            this.lvGeneratedNames.UseCompatibleStateImageBehavior = false;
-            this.lvGeneratedNames.View = System.Windows.Forms.View.Details;
+            this.lvGeneratedContacts.HideSelection = false;
+            this.lvGeneratedContacts.Location = new System.Drawing.Point(335, 68);
+            this.lvGeneratedContacts.Name = "lvGeneratedContacts";
+            this.lvGeneratedContacts.Size = new System.Drawing.Size(486, 255);
+            this.lvGeneratedContacts.TabIndex = 16;
+            this.lvGeneratedContacts.UseCompatibleStateImageBehavior = false;
+            this.lvGeneratedContacts.View = System.Windows.Forms.View.Details;
             // 
-            // btnAddNamesToCRM
+            // btnCreateContactsInDataverse
             // 
-            this.btnAddNamesToCRM.Location = new System.Drawing.Point(553, 346);
-            this.btnAddNamesToCRM.Name = "btnAddNamesToCRM";
-            this.btnAddNamesToCRM.Size = new System.Drawing.Size(242, 50);
-            this.btnAddNamesToCRM.TabIndex = 17;
-            this.btnAddNamesToCRM.Text = "Create Contact(s) in Dataverse";
-            this.btnAddNamesToCRM.UseVisualStyleBackColor = true;
-            this.btnAddNamesToCRM.Click += new System.EventHandler(this.BtnAddNamesToCrm_Click);
+            this.btnCreateContactsInDataverse.Location = new System.Drawing.Point(579, 346);
+            this.btnCreateContactsInDataverse.Name = "btnCreateContactsInDataverse";
+            this.btnCreateContactsInDataverse.Size = new System.Drawing.Size(242, 50);
+            this.btnCreateContactsInDataverse.TabIndex = 17;
+            this.btnCreateContactsInDataverse.Text = "Create Contact(s) in Dataverse";
+            this.btnCreateContactsInDataverse.UseVisualStyleBackColor = true;
+            this.btnCreateContactsInDataverse.Click += new System.EventHandler(this.BtnCreateContactsInDataverse_Click);
             // 
             // btnClearList
             // 
-            this.btnClearList.Location = new System.Drawing.Point(553, 420);
+            this.btnClearList.Location = new System.Drawing.Point(579, 420);
             this.btnClearList.Name = "btnClearList";
             this.btnClearList.Size = new System.Drawing.Size(242, 50);
             this.btnClearList.TabIndex = 18;
@@ -164,17 +147,16 @@ namespace dummy_data_tool2
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.btnClearList);
-            this.Controls.Add(this.btnAddNamesToCRM);
-            this.Controls.Add(this.lvGeneratedNames);
+            this.Controls.Add(this.btnCreateContactsInDataverse);
+            this.Controls.Add(this.lvGeneratedContacts);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.numNameCount);
-            this.Controls.Add(this.btnGenerateRandomNames);
-            this.Controls.Add(this.lblStatusMessage);
+            this.Controls.Add(this.btnGenerateRandomContacts);
             this.Controls.Add(this.toolStripMenu);
             this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "MyPluginControl";
-            this.Size = new System.Drawing.Size(844, 525);
+            this.Size = new System.Drawing.Size(875, 512);
             this.Load += new System.EventHandler(this.MyPluginControl_Load);
             this.toolStripMenu.ResumeLayout(false);
             this.toolStripMenu.PerformLayout();
@@ -187,14 +169,12 @@ namespace dummy_data_tool2
         #endregion
         private System.Windows.Forms.ToolStrip toolStripMenu;
         private System.Windows.Forms.ToolStripButton tsbClose;
-        private System.Windows.Forms.Label lblStatusMessage;
-        private System.Windows.Forms.Timer timerStatus;
-        private System.Windows.Forms.Button btnGenerateRandomNames;
+        private System.Windows.Forms.Button btnGenerateRandomContacts;
         private System.Windows.Forms.NumericUpDown numNameCount;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.ListView lvGeneratedNames;
-        private System.Windows.Forms.Button btnAddNamesToCRM;
+        private System.Windows.Forms.ListView lvGeneratedContacts;
+        private System.Windows.Forms.Button btnCreateContactsInDataverse;
         private System.Windows.Forms.Button btnClearList;
     }
 }

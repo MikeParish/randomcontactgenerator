@@ -1,8 +1,5 @@
-﻿using McTools.Xrm.Connection;
-using Microsoft.Xrm.Sdk;
-using Microsoft.Xrm.Sdk.Query;
+﻿using Microsoft.Xrm.Sdk;
 using System;
-using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
 using XrmToolBox.Extensibility;
@@ -14,9 +11,7 @@ namespace dummy_data_tool2
         private Settings mySettings;
         private readonly string[] firstNames;
         private readonly string[] lastNames;
-        //private readonly string[] areaCodes;
         private readonly Random rand = new Random();
-        private const int TimerInterval = 7500;
 
         public MyPluginControl()
         {
@@ -60,90 +55,57 @@ namespace dummy_data_tool2
                 "Alexander", "Russell", "Griffin", "Diaz", "Hayes"
             };
 
-            //initialize an array of 50 random area codes
-            /*
-            areaCodes = new[]
-            {
-                "202", "305", "310", "312", "404", "415", "512", "617", "646", "702",
-                "212", "213", "214", "253", "301", "408", "503", "518", "614", "703",
-                "215", "216", "281", "314", "323", "407", "509", "515", "615", "704",
-                "217", "219", "303", "315", "330", "410", "510", "516", "618", "707",
-                "218", "220", "304", "316", "331", "412", "520", "530", "619", "708"
-            };
-            */
-
             InitializeComponent();
 
             //initialize the ListView columns
             InitializeListViewColumns();
 
-            //set the initial state of the "Clear List" button
+            //disable the "Clear List" button
             btnClearList.Enabled = false;
 
-            //set the initial state of the "Create Contact(s) in Dataverse" button
-            btnAddNamesToCRM.Enabled = false;
+            //disable the "Create Contact(s) in Dataverse" button
+            btnCreateContactsInDataverse.Enabled = false;
         }
 
-        private void MyPluginControl_Load(object sender, EventArgs e)
+        private void CreateContactsInDataverse(string firstName, string lastName, DateTime birthdate, string phoneNumber)
         {
-            // Loads or creates the settings for the plugin
-            if (!SettingsManager.Instance.TryLoad(GetType(), out mySettings))
+            WorkAsync(new WorkAsyncInfo
             {
-                mySettings = new Settings();
+                Message = "Creating Contact(s) in Dataverse...",
+                Work = (worker, args) =>
+                {
+                    //this code is executed in another thread
+                    Entity newContact = new Entity("contact");
+                    newContact["firstname"] = firstName;
+                    newContact["lastname"] = lastName;
+                    newContact["birthdate"] = birthdate;
+                    newContact["address1_telephone1"] = phoneNumber;
 
-                LogWarning("Settings not found => a new settings file has been created!");
-            }
-            else
-            {
-                LogInfo("Settings found and loaded");
-            }
-        }
+                    //use the Dataverse service client to create the contact in Dataverse
+                    Guid contactId = Service.Create(newContact);
+                    args.Result = contactId;
+                },
 
-        private void TsbClose_Click(object sender, EventArgs e)
-        {
-            CloseTool();
+                PostWorkCallBack = e =>
+                {
+                    if (e.Error != null)
+                    {
+                        //handle any errors that occurred during the operation
+                        MessageBox.Show($"An error occurred: {e.Error.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            });
         }
 
         private void InitializeListViewColumns()
         {
-            lvGeneratedNames.Columns.Clear();
+            lvGeneratedContacts.Columns.Clear();
             //column names and column pixel widths
-            lvGeneratedNames.Columns.Add("First Name", 65);
-            lvGeneratedNames.Columns.Add("Last Name", 75);
-            lvGeneratedNames.Columns.Add("Birthdate", 75);
-            lvGeneratedNames.Columns.Add("Phone Number", 85);
+            lvGeneratedContacts.Columns.Add("First Name", 65);
+            lvGeneratedContacts.Columns.Add("Last Name", 75);
+            lvGeneratedContacts.Columns.Add("Birthdate", 75);
+            lvGeneratedContacts.Columns.Add("Phone Number", 85);
         }
-        
-        private void UpdateStatus(string message, bool isError = false)
-        {
-            lblStatusMessage.ForeColor = isError ? Color.Red : Color.Lime;
-            lblStatusMessage.Text = message;
-            //reset and start the timer each time the status is updated
-            ResetAndStartTimer();
-        }
-
-        private void ResetAndStartTimer()
-        {
-            timerStatus.Stop();
-            timerStatus.Interval = TimerInterval;
-            timerStatus.Start();
-        }
-
-        private void TimerStatus_Tick(object sender, EventArgs e)
-        {
-            //reset the status message to blank
-            lblStatusMessage.Text = "";
-            //stop the timer after clearing the message
-            timerStatus.Stop();
-        }
-        /*
-        private string GenerateRandomName()
-        {
-            string firstName = firstNames[rand.Next(firstNames.Length)];
-            string lastName = lastNames[rand.Next(lastNames.Length)];
-            return $"{firstName} {lastName}";
-        }
-        */
 
         private string GenerateRandomFirstName()
         {
@@ -171,75 +133,54 @@ namespace dummy_data_tool2
 
         private string GenerateRandomPhoneNumber()
         {
-            //randomly select an area code
-            //string areaCode = areaCodes[rand.Next(areaCodes.Length)];
-
             //generate the remaining 7 digits of the phone number
             //generates a number between 1000000 and 9999999
             int numberPart = rand.Next(1000000, 10000000);
-
-            //combine area code and number
+            //combine fake area code and number
             return $"555{numberPart}";
-        }
-
-        private void BtnGenerateRandomNames_Click(object sender, EventArgs e)
-        {
-            //retrieve the number of names to generate from the NumericUpDown control and populate the ListView
-            int numberOfContactsToGenerate = (int)numNameCount.Value;
-            PopulateListView(numberOfContactsToGenerate);
-            //update the status message
-            UpdateStatus("Ready.", false);
         }
 
         private void PopulateListView(int numberOfContacts)
         {
-            lvGeneratedNames.Items.Clear();
+            lvGeneratedContacts.Items.Clear();
 
             for (int i = 0; i < numberOfContacts; i++)
             {
-                //string fullName = GenerateRandomName();
                 string firstName = GenerateRandomFirstName();
                 string lastName = GenerateRandomLastName();
                 DateTime birthdate = GenerateRandomBirthdate();
                 string phoneNumber = GenerateRandomPhoneNumber();
 
-                /*
-                //split the full name into first and last names
-                string[] nameParts = fullName.Split(' ');
-
-                //create a new ListViewItem with the first name
-                ListViewItem item = new ListViewItem(nameParts[0]);
-
-                //add the last name as a subitem while checking to see if the last name exists
-                item.SubItems.Add(nameParts.Length > 1 ? nameParts[1] : string.Empty);
-
-                //add the birth date and format the date as "01-01-2023"
-                item.SubItems.Add(birthdate.ToString("MM-dd-yyyy"));
-
-                //add the phone number
-                item.SubItems.Add(phoneNumber);
-                */
-
                 ListViewItem item = new ListViewItem(firstName);
                 item.SubItems.Add(lastName);
-                //format the date as "01-01-2023"
-                item.SubItems.Add(birthdate.ToString("MM-dd-yyyy"));
+                item.SubItems.Add(birthdate.ToString("MM-dd-yyyy")); //format the date as "01-01-2023"
                 item.SubItems.Add(phoneNumber);
-
                 //add the item to the ListView
-                lvGeneratedNames.Items.Add(item);
+                lvGeneratedContacts.Items.Add(item);
             }
 
-            //update the state of the "Clear List" button
+            //enable the "Clear List" button
             btnClearList.Enabled = true;
+            //enable the "Create Contact(s) in Dataverse" button
+            btnCreateContactsInDataverse.Enabled = true;
+        }
+        
+        //event handlers      
+        private void BtnClearList_Click(object sender, EventArgs e)
+        {
+            //clear the ListView
+            lvGeneratedContacts.Items.Clear();
 
-            //update the state of the "Create Contact(s) in Dataverse" button
-            btnAddNamesToCRM.Enabled = true;
+            //disable the "Clear List" button
+            btnClearList.Enabled = false;
+
+            //disable the "Create Contact(s) in Dataverse" button
+            btnCreateContactsInDataverse.Enabled = false;
         }
 
-        private void BtnAddNamesToCrm_Click(object sender, EventArgs e)
+        private void BtnCreateContactsInDataverse_Click(object sender, EventArgs e)
         {
-            foreach (ListViewItem item in lvGeneratedNames.Items)
+            foreach (ListViewItem item in lvGeneratedContacts.Items)
             {
                 //first name from the ListViewItem
                 string firstName = item.Text;
@@ -248,84 +189,44 @@ namespace dummy_data_tool2
                 //birthdate from the ListViewItem
                 string birthdateString = item.SubItems[2].Text;
                 //phone number from the ListViewItem
-                string phoneNumberString = item.SubItems[3].Text; 
+                string phoneNumberString = item.SubItems[3].Text;
 
                 //convert the birthdate string to DateTime
                 DateTime birthdate = DateTime.ParseExact(birthdateString, "MM-dd-yyyy", CultureInfo.InvariantCulture);
 
                 //call the method to create a contact in Dataverse
-                CreateContactInCrm(firstName, lastName, birthdate, phoneNumberString);
+                CreateContactsInDataverse(firstName, lastName, birthdate, phoneNumberString);
             }
-      
+
             //disable the "Create Contact(s) in Dataverse" button since the contacts have just been created in Dataverse
-            btnAddNamesToCRM.Enabled = false;
+            btnCreateContactsInDataverse.Enabled = false;
         }
 
-        private void CreateContactInCrm(string firstName, string lastName, DateTime birthdate, string phoneNumber)
+        private void BtnGenerateRandomContacts_Click(object sender, EventArgs e)
         {
-            WorkAsync(new WorkAsyncInfo
+            //retrieve the number of names to generate from the NumericUpDown control and populate the ListView
+            int numberOfContactsToGenerate = (int)numNameCount.Value;
+            PopulateListView(numberOfContactsToGenerate);
+        }
+
+        private void MyPluginControl_Load(object sender, EventArgs e)
+        {
+            // Loads or creates the settings for the plugin
+            if (!SettingsManager.Instance.TryLoad(GetType(), out mySettings))
             {
-                Message = "Creating contact(s) in Dataverse...",
-                Work = (worker, args) =>
-                {
-                    //this code is executed in another thread
-                    Entity newContact = new Entity("contact");
-                    newContact["firstname"] = firstName;
-                    newContact["lastname"] = lastName;
-                    newContact["birthdate"] = birthdate;
-                    newContact["address1_telephone1"] = phoneNumber;
+                mySettings = new Settings();
 
-                    //use the Dataverse service client to create the contact in Dataverse
-                    Guid contactId = Service.Create(newContact);
-                    args.Result = contactId;
-                },
-
-                /*
-                ProgressChanged = e =>
-                {
-                    //update UI to indicate progress, if needed
-                    SetWorkingMessage(e.UserState.ToString()); 
-                }
-                */
-
-                PostWorkCallBack = e =>
-                {
-                    if (e.Error != null)
-                    {
-                        //handle any errors that occurred during the operation
-                        MessageBox.Show($"An error occurred: {e.Error.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                    else
-                    {
-                        //this code is executed in the main thread after the background work is completed
-                        //Guid contactId = (Guid)e.Result;
-                        //UpdateStatus($"Contact created with ID: {contactId}");
-                        if (numNameCount.Value == 1)
-                        {
-                            UpdateStatus($"Success! Created {numNameCount.Value} contact in Dataverse.", false);
-                        }
-                        else
-                        {
-                            UpdateStatus($"Success! Created {numNameCount.Value} contacts in Dataverse.", false);
-                        }
-                    }
-                }
-            });
+                LogWarning("Settings not found => a new settings file has been created!");
+            }
+            else
+            {
+                LogInfo("Settings found and loaded");
+            }
         }
 
-        private void BtnClearList_Click(object sender, EventArgs e)
+        private void TsbClose_Click(object sender, EventArgs e)
         {
-            //clear the ListView
-            lvGeneratedNames.Items.Clear();
-
-            //update the status message to inform the user that the list has been cleared
-            UpdateStatus("List cleared.", false);
-
-            //update the state of the "Clear List" button
-            btnClearList.Enabled = false;
-
-            //update the state of the "Create Contact(s) in Dataverse" button
-            btnAddNamesToCRM.Enabled = false;
+            CloseTool();
         }
     }
 }
